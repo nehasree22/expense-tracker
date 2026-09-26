@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<header class="top-header">
+    <div>
+        <p class="eyebrow">Manage</p>
+        <h1>Your categories.</h1>
+        <p class="subtitle">Add the ones that fit how you actually spend, and retire the ones that don't.</p>
+    </div>
+</header>
+
+<section class="dashboard-grid categories-grid">
+
+    <div class="dashboard-card">
+        <div class="section-heading">
+            <h2>All categories</h2>
+            <span class="transaction-count">{{ category_rows|length }} total</span>
+        </div>
+
+        <div class="category-manage-list">
+            {% for c in category_rows %}
+            <div class="category-manage-row">
+                <div class="transaction-mark">{{ c.mark }}</div>
+                <div class="transaction-details">
+                    <strong>{{ c.name }}</strong>
+                    <span>₹{{ "%.2f"|format(c.amount) }} spent · {{ c.percent }}% of total</span>
+                </div>
+                <form action="{{ url_for('delete_category', category_id=c.id) }}" method="POST" class="delete-form"
+                    onsubmit="return confirm('Remove this category? Past transactions will keep their existing label.');">
+                    <button type="submit" class="delete-btn" title="Remove category">✕</button>
+                </form>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-circle">◆</div>
+                <h3>No categories yet</h3>
+                <p>Add your first one on the right to start organizing your spending.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="dashboard-card insight-card">
+        <p class="eyebrow" style="color:#c9a24a;">New Category</p>
+        <h2>Add a category</h2>
+        <p class="insight-text">Give it a name and a short mark — a single letter or symbol shown in the ledger.</p>
+
+        <form action="{{ url_for('add_category') }}" method="POST" class="category-form">
+            <div class="form-group">
+                <label for="name">Category name</label>
+                <input type="text" id="name" name="name" placeholder="e.g. Travel" required>
+            </div>
+            <div class="form-group">
+                <label for="mark">Mark (optional)</label>
+                <input type="text" id="mark" name="mark" placeholder="e.g. T" maxlength="2">
+            </div>
+            <button type="submit" class="save-expense-btn">Add Category</button>
+        </form>
+    </div>
+
+</section>
+
+{% endblock %}

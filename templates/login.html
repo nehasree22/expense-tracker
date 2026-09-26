@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — The Ledger</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="auth-body">
+
+    <div class="auth-page">
+        <div class="auth-card">
+
+            <div class="brand auth-brand">
+                <div class="brand-mark">L</div>
+                <div>
+                    <h2>The Ledger</h2>
+                    <p>PERSONAL FINANCE</p>
+                </div>
+            </div>
+
+            <h1 class="auth-title">Welcome back</h1>
+            <p class="auth-subtitle">Sign in to see where things stand.</p>
+
+            {% if just_registered %}
+            <div class="auth-notice auth-notice-success">Account created. Sign in below.</div>
+            {% endif %}
+
+            {% if error %}
+            <div class="auth-notice auth-notice-error">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <input type="hidden" name="next" value="{{ next }}">
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" value="{{ username }}" placeholder="e.g. priya" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="save-expense-btn">Sign In</button>
+            </form>
+
+            <p class="auth-switch">New here? <a href="{{ url_for('register') }}">Create an account</a></p>
+
+        </div>
+    </div>
+
+</body>
+</html>

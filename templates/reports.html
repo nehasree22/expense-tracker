@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<header class="top-header">
+    <div>
+        <p class="eyebrow">Reports</p>
+        <h1>{{ month_label }}, in numbers.</h1>
+        <p class="subtitle">A closer look at one month at a time, and how it compares to the last six.</p>
+    </div>
+
+    <form method="GET" action="{{ url_for('reports') }}" class="month-select-form">
+        <select name="month" onchange="this.form.submit()">
+            {% for m in available_months %}
+            <option value="{{ m }}" {{ 'selected' if m == selected_month else '' }}>
+                {{ m }}
+            </option>
+            {% else %}
+            <option value="{{ selected_month }}" selected>{{ selected_month }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</header>
+
+<section class="summary-grid">
+
+    <div class="summary-card">
+        <div class="card-top">
+            <span>Total This Month</span>
+            <div class="card-icon">₹</div>
+        </div>
+        <h2>₹{{ "%.2f"|format(month_total) }}</h2>
+        <p>{{ month_count }} transaction{{ 's' if month_count != 1 else '' }}</p>
+    </div>
+
+    <div class="summary-card">
+        <div class="card-top">
+            <span>Average Per Day</span>
+            <div class="card-icon">◐</div>
+        </div>
+        <h2>₹{{ "%.2f"|format(avg_per_day) }}</h2>
+        <p>Based on days elapsed this month</p>
+    </div>
+
+    <div class="summary-card dark-card">
+        <div class="card-top">
+            <span>Top Category</span>
+            <div class="health-dot"></div>
+        </div>
+        <h2>{{ month_breakdown[0].name if month_breakdown else "—" }}</h2>
+        <p>Leading this month</p>
+    </div>
+
+</section>
+
+<section class="dashboard-grid">
+
+    <div class="dashboard-card">
+        <div class="section-heading">
+            <h2>Six-Month Trend</h2>
+        </div>
+
+        <div class="trend-chart">
+            {% for t in trend %}
+            <div class="trend-bar-col">
+                <div class="trend-bar-track">
+                    <div class="trend-bar-fill" style="height: {{ t.height_percent }}%;" title="₹{{ '%.2f'|format(t.amount) }}"></div>
+                </div>
+                <span class="trend-bar-label">{{ t.label }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="dashboard-card insight-card">
+        <p class="eyebrow" style="color:#c9a24a;">This Month</p>
+        <h2>Category breakdown</h2>
+        <p class="insight-text">How {{ month_label }} splits across your categories.</p>
+
+        <div class="category-breakdown">
+            {% for c in month_breakdown %}
+            <div class="category-row">
+                <div class="category-row-top">
+                    <span>{{ c.mark }} &nbsp; {{ c.name }}</span>
+                    <span>{{ c.percent }}%</span>
+                </div>
+                <div class="category-bar-track">
+                    <div class="category-bar-fill" style="width: {{ c.percent }}%;"></div>
+                </div>
+            </div>
+            {% else %}
+            <p class="insight-text">No spending recorded for this month yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}

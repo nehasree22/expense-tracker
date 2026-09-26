@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}The Ledger — Personal Finance{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="app">
+
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-mark">L</div>
+                <div>
+                    <h2>The Ledger</h2>
+                    <p>PERSONAL FINANCE</p>
+                </div>
+            </div>
+
+            <nav class="navigation">
+                <a href="{{ url_for('dashboard') }}" class="nav-link {{ 'active' if request.endpoint == 'dashboard' else '' }}">
+                    <span>◆</span> Dashboard
+                </a>
+                <a href="{{ url_for('transactions') }}" class="nav-link {{ 'active' if request.endpoint == 'transactions' else '' }}">
+                    <span>▤</span> Transactions
+                </a>
+                <a href="{{ url_for('categories_page') }}" class="nav-link {{ 'active' if request.endpoint == 'categories_page' else '' }}">
+                    <span>◐</span> Categories
+                </a>
+                <a href="{{ url_for('reports') }}" class="nav-link {{ 'active' if request.endpoint == 'reports' else '' }}">
+                    <span>▭</span> Reports
+                </a>
+                {% if current_is_admin %}
+                <a href="{{ url_for('admin_page') }}" class="nav-link {{ 'active' if request.endpoint == 'admin_page' else '' }}">
+                    <span>⚿</span> Admin
+                </a>
+                {% endif %}
+            </nav>
+
+            <div class="sidebar-bottom">
+                {% if current_username %}
+                <div class="account-box">
+                    <div class="account-name">{{ current_username }}{% if current_is_admin %} <span class="admin-badge">ADMIN</span>{% endif %}</div>
+                    <a href="{{ url_for('logout') }}" class="account-logout">Log out</a>
+                </div>
+                {% endif %}
+                <div class="ledger-note">
+                    <span>◆</span> Recorded locally, privately
+                </div>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

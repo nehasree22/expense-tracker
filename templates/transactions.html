@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<header class="top-header">
+    <div>
+        <p class="eyebrow">Full Ledger</p>
+        <h1>Every transaction, in one place.</h1>
+        <p class="subtitle">{{ transaction_count }} entr{{ 'y' if transaction_count == 1 else 'ies' }} matching your filters · ₹{{ "%.2f"|format(filtered_total) }} total</p>
+    </div>
+
+    <button class="add-expense-btn" onclick="openAddModal()">
+        <span>+</span> Record Expense
+    </button>
+</header>
+
+<div class="dashboard-card filter-bar">
+    <form method="GET" action="{{ url_for('transactions') }}" class="filter-form">
+
+        <div class="filter-field filter-search">
+            <label for="q">Search</label>
+            <input type="text" id="q" name="q" value="{{ q }}" placeholder="Search by title…">
+        </div>
+
+        <div class="filter-field">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+                <option value="">All categories</option>
+                {% for category in categories %}
+                <option value="{{ category.name }}" {{ 'selected' if category_filter == category.name else '' }}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-field">
+            <label for="payment_method">Paid via</label>
+            <select id="payment_method" name="payment_method">
+                <option value="">All methods</option>
+                {% for method in payment_methods %}
+                <option value="{{ method }}" {{ 'selected' if payment_filter == method else '' }}>{{ method }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-field">
+            <label for="sort">Sort by</label>
+            <select id="sort" name="sort">
+                <option value="date_desc" {{ 'selected' if sort == 'date_desc' else '' }}>Newest first</option>
+                <option value="date_asc" {{ 'selected' if sort == 'date_asc' else '' }}>Oldest first</option>
+                <option value="amount_desc" {{ 'selected' if sort == 'amount_desc' else '' }}>Amount: high to low</option>
+                <option value="amount_asc" {{ 'selected' if sort == 'amount_asc' else '' }}>Amount: low to high</option>
+            </select>
+        </div>
+
+        <button type="submit" class="filter-apply-btn">Apply</button>
+        {% if q or category_filter or payment_filter or sort != 'date_desc' %}
+        <a href="{{ url_for('transactions') }}" class="filter-clear-btn">Clear</a>
+        {% endif %}
+
+    </form>
+</div>
+
+<div class="dashboard-card">
+    <div class="transactions-list">
+        {% for expense in expenses %}
+        <div class="transaction-item">
+            <div class="transaction-mark">{{ expense.mark }}</div>
+            <div class="transaction-details">
+                <strong>{{ expense.title }}</strong>
+                <span>{{ expense.category }} · {{ expense.payment_method }} · {{ expense.expense_date }}</span>
+            </div>
+            <div class="transaction-amount">−₹{{ "%.2f"|format(expense.amount) }}</div>
+            <button type="button" class="edit-btn"
+                onclick="openEditModal({{ expense.id }}, '{{ expense.title|replace("'", "\\'") }}', {{ expense.amount }}, '{{ expense.category }}', '{{ expense.payment_method }}', '{{ expense.expense_date }}')"
+                title="Edit entry">✎</button>
+            <form action="{{ url_for('delete_expense', expense_id=expense.id) }}" method="POST" class="delete-form">
+                <input type="hidden" name="next" value="{{ request.full_path }}">
+                <button type="submit" class="delete-btn" title="Remove entry">✕</button>
+            </form>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-circle">◆</div>
+            <h3>No matching transactions</h3>
+            <p>Nothing matches these filters. Try clearing them, or record a new expense.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% include "_expense_modal.html" %}
+
+{% endblock %}

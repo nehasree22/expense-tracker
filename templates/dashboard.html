@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<header class="top-header">
+    <div>
+        <p class="eyebrow">Statement Overview</p>
+        <h1>Good day. Here's where things stand.</h1>
+        <p class="subtitle">A private record of {{ transaction_count }} transaction{{ 's' if transaction_count != 1 else '' }}, kept in order.</p>
+    </div>
+
+    <button class="add-expense-btn" onclick="openAddModal()">
+        <span>+</span> Record Expense
+    </button>
+</header>
+
+<section class="summary-grid">
+
+    <div class="summary-card">
+        <div class="card-top">
+            <span>Total Spent</span>
+            <div class="card-icon">₹</div>
+        </div>
+        <h2>₹{{ "%.2f"|format(total) }}</h2>
+        <p>Across all recorded time</p>
+    </div>
+
+    <div class="summary-card">
+        <div class="card-top">
+            <span>This Month</span>
+            <div class="card-icon">◐</div>
+        </div>
+        <h2>₹{{ "%.2f"|format(this_month_total) }}</h2>
+        <p>Spend so far this month</p>
+    </div>
+
+    <div class="summary-card dark-card">
+        <div class="card-top">
+            <span>Leading Category</span>
+            <div class="health-dot"></div>
+        </div>
+        <h2>{{ top_category }}</h2>
+        <p>Where most of your money goes</p>
+    </div>
+
+</section>
+
+<section class="dashboard-grid">
+
+    <div class="dashboard-card">
+        <div class="section-heading">
+            <h2>Recent Transactions</h2>
+            {% if showing_recent %}
+            <a href="{{ url_for('transactions') }}" class="text-link">View all →</a>
+            {% else %}
+            <span class="transaction-count">{{ transaction_count }} entries</span>
+            {% endif %}
+        </div>
+
+        <div class="transactions-list">
+            {% for expense in expenses %}
+            <div class="transaction-item">
+                <div class="transaction-mark">{{ expense.mark }}</div>
+                <div class="transaction-details">
+                    <strong>{{ expense.title }}</strong>
+                    <span>{{ expense.category }} · {{ expense.payment_method }} · {{ expense.expense_date }}</span>
+                </div>
+                <div class="transaction-amount">−₹{{ "%.2f"|format(expense.amount) }}</div>
+                <button type="button" class="edit-btn"
+                    onclick="openEditModal({{ expense.id }}, '{{ expense.title|replace("'", "\\'") }}', {{ expense.amount }}, '{{ expense.category }}', '{{ expense.payment_method }}', '{{ expense.expense_date }}')"
+                    title="Edit entry">✎</button>
+                <form action="{{ url_for('delete_expense', expense_id=expense.id) }}" method="POST" class="delete-form">
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="delete-btn" title="Remove entry">✕</button>
+                </form>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-circle">◆</div>
+                <h3>The ledger is empty</h3>
+                <p>Nothing has been recorded yet. Add your first expense and it will appear here, entered in order.</p>
+                <button class="add-expense-btn" onclick="openAddModal()">
+                    <span>+</span> Record Expense
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="dashboard-card insight-card">
+        <p class="eyebrow" style="color:#c9a24a;">Where It Goes</p>
+        <h2>Spending by category</h2>
+        <p class="insight-text">A running breakdown of every category you've spent in, ranked by share of total spend.</p>
+
+        <div class="category-breakdown">
+            {% for c in category_breakdown %}
+            <div class="category-row">
+                <div class="category-row-top">
+                    <span>{{ c.mark }} &nbsp; {{ c.name }}</span>
+                    <span>{{ c.percent }}%</span>
+                </div>
+                <div class="category-bar-track">
+                    <div class="category-bar-fill" style="width: {{ c.percent }}%;"></div>
+                </div>
+            </div>
+            {% else %}
+            <p class="insight-text">Nothing to break down yet — record a few expenses first.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
+
+{% include "_expense_modal.html" %}
+
+{% endblock %}

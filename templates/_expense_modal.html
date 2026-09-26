@@ -1,0 +1,56 @@
+<!-- ================= EXPENSE MODAL (add + edit share this form) ================= -->
+
+<div class="modal" id="expenseModal">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2 id="modalTitle">Record an Expense</h2>
+            <button class="close-btn" onclick="closeExpenseModal()">&times;</button>
+        </div>
+
+        <form id="expenseForm" action="{{ url_for('add_expense') }}" method="POST">
+
+            <input type="hidden" name="next" value="{{ request.path }}">
+
+            <div class="form-group">
+                <label for="title">What was it for?</label>
+                <input type="text" id="title" name="title" placeholder="e.g. Coffee with Priya" required>
+            </div>
+
+            <div class="form-group amount-input">
+                <label for="amount">Amount</label>
+                <span>₹</span>
+                <input type="number" id="amount" name="amount" step="0.01" min="0" placeholder="0.00" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category" required>
+                        {% for category in categories %}
+                        <option value="{{ category.name }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="payment_method">Paid Via</label>
+                    <select id="payment_method" name="payment_method" required>
+                        {% for method in payment_methods %}
+                        <option value="{{ method }}">{{ method }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="expense_date">Date</label>
+                <input type="date" id="expense_date" name="expense_date" value="{{ today }}" required>
+            </div>
+
+            <button type="submit" class="save-expense-btn" id="modalSubmitBtn">Save to Ledger</button>
+
+        </form>
+
+    </div>
+</div>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account — The Ledger</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="auth-body">
+
+    <div class="auth-page">
+        <div class="auth-card">
+
+            <div class="brand auth-brand">
+                <div class="brand-mark">L</div>
+                <div>
+                    <h2>The Ledger</h2>
+                    <p>PERSONAL FINANCE</p>
+                </div>
+            </div>
+
+            <h1 class="auth-title">Open your ledger</h1>
+            <p class="auth-subtitle">Your own private record — no one else can see it.</p>
+
+            {% if error %}
+            <div class="auth-notice auth-notice-error">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('register') }}">
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" value="{{ username }}" placeholder="e.g. priya" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="At least 4 characters" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="save-expense-btn">Create Account</button>
+            </form>
+
+            <p class="auth-switch">Already have one? <a href="{{ url_for('login') }}">Sign in</a></p>
+
+        </div>
+    </div>
+
+</body>
+</html>

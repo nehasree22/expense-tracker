@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<header class="top-header">
+    <div>
+        <p class="eyebrow">Administration</p>
+        <h1>Every account on this ledger.</h1>
+        <p class="subtitle">{{ user_count }} registered user{{ 's' if user_count != 1 else '' }} · ₹{{ "%.2f"|format(platform_total) }} recorded across {{ platform_expense_count }} entries in total.</p>
+    </div>
+</header>
+
+<div class="dashboard-card">
+    <div class="section-heading">
+        <h2>Users</h2>
+        <span class="transaction-count">{{ user_count }} accounts</span>
+    </div>
+
+    <div class="admin-table">
+        <div class="admin-table-head">
+            <span>User</span>
+            <span>Joined</span>
+            <span>Entries</span>
+            <span>Total Spent</span>
+            <span>Role</span>
+            <span></span>
+        </div>
+
+        {% for u in user_rows %}
+        <div class="admin-table-row">
+            <span class="admin-user-name">{{ u.username }}</span>
+            <span class="admin-muted">{{ u.created_at }}</span>
+            <span class="admin-muted">{{ u.expense_count }}</span>
+            <span class="admin-muted">₹{{ "%.2f"|format(u.expense_total) }}</span>
+            <span>
+                {% if u.is_admin %}
+                <span class="role-pill role-admin">Admin</span>
+                {% else %}
+                <span class="role-pill">Member</span>
+                {% endif %}
+            </span>
+            <span class="admin-actions">
+                {% if u.id != session['user_id'] %}
+                <form action="{{ url_for('admin_toggle_admin', user_id=u.id) }}" method="POST">
+                    <button type="submit" class="admin-action-btn">
+                        {{ 'Remove admin' if u.is_admin else 'Make admin' }}
+                    </button>
+                </form>
+                <form action="{{ url_for('admin_delete_user', user_id=u.id) }}" method="POST"
+                    onsubmit="return confirm('Delete this account and all of its expenses? This can\'t be undone.');">
+                    <button type="submit" class="delete-btn" title="Delete account">✕</button>
+                </form>
+                {% else %}
+                <span class="admin-muted admin-self">You</span>
+                {% endif %}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
